@@ -1,0 +1,15 @@
+name: Reusable Workflow Inputs
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'Node.js version'
+        default: '18'
+        required: false
+        type: string
+      redis-version:
+        description: 'Redis version'
+        default: '6'
+        required: false
+        type: string 
