@@ -1,0 +1,49 @@
+name: LinkedIn Fetcher
+description: Sistema de autenticação e scraping do LinkedIn
+
+columns:
+  - name: 🆕 Backlog
+    type: automated
+    automation:
+      - trigger: new_issue
+        action: move_to_column
+
+  - name: 📋 To Do
+    type: manual
+
+  - name: 🏗️ In Progress
+    type: manual
+
+  - name: 👀 Review
+    type: automated
+    automation:
+      - trigger: pull_request
+        action: move_to_column
+
+  - name: ✅ Done
+    type: automated
+    automation:
+      - trigger: closed
+        action: move_to_column
+
+labels:
+  - name: auth
+    color: '#0052CC'
+    description: Autenticação LinkedIn
+
+  - name: scraping
+    color: '#36B37E'
+    description: Scraping de dados
+
+  - name: bug
+    color: '#FF0000'
+    description: Algo não está funcionando
+
+  - name: enhancement
+    color: '#1D76DB'
+    description: Nova funcionalidade
+
+milestones:
+  - title: MVP
+    description: Versão inicial com autenticação e scraping básico
+    due_date: 2024-04-30 
