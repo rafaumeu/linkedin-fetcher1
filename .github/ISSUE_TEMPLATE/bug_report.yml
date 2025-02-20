@@ -1,0 +1,30 @@
+name: Bug Report
+description: Criar um relatório de bug
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por reportar um bug!
+  
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição do Bug
+      description: Uma descrição clara do bug
+      placeholder: O que aconteceu?
+    validations:
+      required: true
+      
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Passos para Reproduzir
+      description: Como reproduzir o comportamento?
+      placeholder: |
+        1. Vá para '...'
+        2. Clique em '....'
+        3. Erro aparece
+    validations:
+      required: true 
