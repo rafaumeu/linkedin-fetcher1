@@ -1,0 +1,12 @@
+daysUntilStale: 60
+daysUntilClose: 7
+exemptLabels:
+  - pinned
+  - security
+  - bug
+staleLabel: wontfix
+markComment: >
+  Esta issue foi marcada como stale por falta de atividade recente.
+  Será fechada se não houver nova atividade.
+closeComment: >
+  Esta issue foi fechada por inatividade. 

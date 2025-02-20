@@ -1,0 +1,7 @@
+# Configuração global
+*       @rafaumeu
+
+# Configurações específicas
+/src/services/   @rafaumeu
+/src/pages/      @rafaumeu
+/.github/        @rafaumeu 

@@ -1,0 +1,20 @@
+frontend:
+- src/pages/**/*
+- src/components/**/*
+
+backend:
+- src/server.ts
+- src/services/**/*
+
+dependencies:
+- package.json
+- yarn.lock
+
+documentation:
+- '**/*.md'
+- docs/**/*
+
+configuration:
+- .github/**/*
+- '*.config.js'
+- '*.config.ts' 
