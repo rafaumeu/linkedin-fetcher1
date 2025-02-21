@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/add-to-project@v0.5.0
         with:
-          project-url: https://github.com/users/${{ github.repository_owner }}/projects/linkedin-fetcher
+          project-url: https://github.com/users/rafaumeu/projects/6
           github-token: ${{ secrets.PROJECT_TOKEN }}
       
       - name: Classify Issue
