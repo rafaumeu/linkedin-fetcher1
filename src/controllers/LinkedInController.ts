@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import type { Request, Response } from "express";
 import type { ParamsDictionary } from "express-serve-static-core";
 import { environment } from "../config/environment";
@@ -12,7 +13,6 @@ import type {
   LinkedInProfileBody,
   LinkedInValidationResponse,
 } from "../types/linkedin";
-import crypto from "node:crypto";
 
 export class LinkedInController {
   private readonly authService: LinkedInAuthService;
@@ -102,7 +102,10 @@ export class LinkedInController {
   public handleCallback = async (req: Request, res: Response) => {
     try {
       const params = LinkedInCallbackSchema.parse(req.query);
-      const tokens = await this.authService.getAccessToken(params.code, params.state);
+      const tokens = await this.authService.getAccessToken(
+        params.code,
+        params.state,
+      );
 
       return res.redirect(
         `${environment.linkedIn.frontendUrl}?tokens=${JSON.stringify(tokens)}`,
@@ -217,6 +220,6 @@ export class LinkedInController {
   }
 
   private generateRandomState(): string {
-    return crypto.randomBytes(16).toString('hex'); // Gera um estado aleatório de 32 caracteres hexadecimais
+    return crypto.randomBytes(16).toString("hex"); // Gera um estado aleatório de 32 caracteres hexadecimais
   }
 }
