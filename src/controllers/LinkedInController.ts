@@ -12,6 +12,7 @@ import type {
   LinkedInProfileBody,
   LinkedInValidationResponse,
 } from "../types/linkedin";
+import crypto from "node:crypto";
 
 export class LinkedInController {
   private readonly authService: LinkedInAuthService;
@@ -29,64 +30,70 @@ export class LinkedInController {
       LinkedInProfileBody
     >,
     res: Response<IProfileResponse | IProfileError>,
-  ) => {
+  ): Promise<void> => {
     try {
       const { username, linkedinToken } = req.body;
 
       if (!this.validateProfileRequest(username, linkedinToken)) {
-        return res.status(400).json({
+        res.status(400).json({
           error: "Username e token do LinkedIn são obrigatórios",
         });
+        return;
       }
 
       const tokenValidation = this.validateTokenFormat(linkedinToken);
       if (!tokenValidation.isValid) {
-        return res.status(400).json({
+        res.status(400).json({
           error: tokenValidation.error || "Token inválido",
         });
+        return;
       }
 
       const cachedProfile = await this.getCachedProfile(username);
       if (cachedProfile) {
-        return res.json(cachedProfile);
+        res.json(cachedProfile);
+        return;
       }
 
       const profile = await this.fetchAndCacheProfile(username, linkedinToken);
-      return res.json(profile);
+      res.json(profile);
     } catch (error) {
-      return this.handleError(res, error);
+      this.handleError(res, error);
     }
   };
 
   public validateToken = async (
     req: Request,
     res: Response<LinkedInValidationResponse>,
-  ) => {
+  ): Promise<void> => {
     try {
       const { token } = req.body;
       if (!token) {
-        return res.json({ isValid: false, error: "Token não fornecido" });
+        res.status(400).json({ isValid: false, error: "Token não fornecido" });
+        return;
       }
 
       const scraper = new LinkedInScrapper(token);
       const isValid = await scraper.validateToken();
 
-      return res.json({ isValid });
+      res.json({ isValid });
     } catch (error) {
-      return res.json({
+      res.status(500).json({
         isValid: false,
         error: error instanceof Error ? error.message : "Erro desconhecido",
       });
     }
   };
 
-  public authenticate = async (_req: Request, res: Response) => {
+  public authenticate = async (_req: Request, res: Response): Promise<void> => {
     try {
-      const authUrl = await this.authService.getAuthorizationUrl();
-      return res.json({ url: authUrl });
+      const state = this.generateRandomState();
+      await this.authService.storeState(state);
+      const authUrl = await this.authService.getAuthorizationUrl(state);
+      res.json({ url: authUrl });
     } catch (error) {
       console.error("Erro na autenticação:", error);
-      return res.status(500).json({
+      res.status(500).json({
         error: "Erro ao iniciar autenticação com LinkedIn",
       });
     }
@@ -95,7 +102,7 @@ export class LinkedInController {
   public handleCallback = async (req: Request, res: Response) => {
     try {
       const params = LinkedInCallbackSchema.parse(req.query);
-      const tokens = await this.authService.handleCallback(params.code);
+      const tokens = await this.authService.getAccessToken(params.code, params.state);
 
       return res.redirect(
         `${environment.linkedIn.frontendUrl}?tokens=${JSON.stringify(tokens)}`,
@@ -108,22 +115,24 @@ export class LinkedInController {
     }
   };
 
-  public browserAuth = async (req: Request, res: Response) => {
+  public browserAuth = async (req: Request, res: Response): Promise<void> => {
     try {
       const { token } = req.body;
       if (!token) {
-        return res.status(400).json({ error: "Token não fornecido" });
+        res.status(400).json({ error: "Token não fornecido" });
+        return;
       }
 
       const isValid = await this.authService.validateBrowserToken(token);
       if (!isValid) {
-        return res.status(401).json({ error: "Token inválido ou expirado" });
+        res.status(401).json({ error: "Token inválido ou expirado" });
+        return;
       }
 
-      return res.json({ success: true });
+      res.json({ success: true });
     } catch (error) {
       console.error("Erro na autenticação do browser:", error);
-      return res.status(500).json({
+      res.status(500).json({
         error: "Erro na autenticação",
       });
     }
@@ -205,5 +214,9 @@ export class LinkedInController {
       error: "Erro ao extrair perfil do LinkedIn",
       details: error instanceof Error ? error.message : "Erro desconhecido",
     });
+  }
+
+  private generateRandomState(): string {
+    return crypto.randomBytes(16).toString('hex'); // Gera um estado aleatório de 32 caracteres hexadecimais
   }
 }
