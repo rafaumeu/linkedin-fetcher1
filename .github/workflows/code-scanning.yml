@@ -17,6 +17,8 @@ jobs:
           node-version: '20'
       - name: Install dependencies
         run: yarn install
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
       - name: Run CodeQL analysis
         uses: github/codeql-action/analyze@v2
         with:
