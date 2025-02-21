@@ -37,31 +37,22 @@ export interface IEducation {
 
 export interface ISkill {
   name: string;
-  endorsements: number;
-  category?: string;
-  proficiency?: string;
-  nome?: string;
-  nivel?: string;
+  endorsements?: number;
 }
 
 export interface IProfile {
   name: string;
   headline?: string;
   location?: string;
-  summary?: string;
-  profilePictureUrl?: string;
-  connectionDegree?: number;
-  experiences: IExperience[];
-  education: IEducation[];
-  skills: ISkill[];
-  certifications: ICertification[];
-  languages?: string[];
+  experiences?: IExperience[];
+  education?: IEducation[];
+  skills?: ISkill[];
+  certifications?: ICertification[];
   lastUpdate?: Date;
-  fromCache?: boolean;
 }
 
 // Interface para respostas da API
-export interface IProfileResponse extends IProfile {
+export interface IProfileResponse extends Omit<IProfile, "lastUpdate"> {
   lastUpdate: Date;
   fromCache: boolean;
 }
@@ -70,5 +61,4 @@ export interface IProfileResponse extends IProfile {
 export interface IProfileError {
   error: string;
   details?: string;
-  code?: number;
 }
