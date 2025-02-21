@@ -1,20 +1,27 @@
 export interface LinkedInApiResponse {
-    included: LinkedInElement[];
-    data: any;
+  included: LinkedInElement[];
+  data: LinkedInData;
 }
 
-export interface LinkedInElement {
-    $type: string;
-    title?: string;
-    companyName?: string;
-    startDate?: {
-        month: number;
-        year: number;
-    };
-    endDate?: {
-        month: number;
-        year: number;
-    };
-    description?: string;
-    skills?: string[];
+interface LinkedInData {
+  id: string;
+  firstName: string;
+  lastName: string;
+  headline?: string;
+  publicIdentifier: string;
+  profilePicture?: {
+    displayImage: string;
+  };
+}
+
+interface LinkedInElement {
+  entityUrn: string;
+  $type: string;
+  title?: string;
+  companyName?: string;
+  description?: string;
+  dateRange?: {
+    start: { year: number; month?: number };
+    end?: { year: number; month?: number };
+  };
 }
