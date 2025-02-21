@@ -26,19 +26,45 @@ export class LinkedInAuthService {
   private readonly cache: CacheService;
 
   constructor() {
-    const isDev = process.env.NODE_ENV === 'development';
+    const isDev = process.env.NODE_ENV === "development";
 
     const config = {
-      clientId: environment.linkedIn?.clientId || process.env.LINKEDIN_CLIENT_ID || (isDev ? 'dev-id' : undefined),
-      clientSecret: environment.linkedIn?.clientSecret || process.env.LINKEDIN_CLIENT_SECRET || (isDev ? 'dev-secret' : undefined),
-      redirectUri: environment.linkedIn?.redirectUri || process.env.LINKEDIN_REDIRECT_URI || (isDev ? 'http://localhost:3000/callback' : undefined),
-      cookie: environment.linkedIn?.cookie || process.env.LINKEDIN_COOKIE || (isDev ? 'dev-cookie' : undefined),
-      frontendUrl: environment.linkedIn?.frontendUrl || process.env.FRONTEND_URL || 'http://localhost:3000',
-      scopes: environment.linkedIn?.scopes || ['r_liteprofile', 'r_emailaddress'],
+      clientId:
+        environment.linkedIn?.clientId ||
+        process.env.LINKEDIN_CLIENT_ID ||
+        (isDev ? "dev-id" : undefined),
+      clientSecret:
+        environment.linkedIn?.clientSecret ||
+        process.env.LINKEDIN_CLIENT_SECRET ||
+        (isDev ? "dev-secret" : undefined),
+      redirectUri:
+        environment.linkedIn?.redirectUri ||
+        process.env.LINKEDIN_REDIRECT_URI ||
+        (isDev ? "http://localhost:3000/callback" : undefined),
+      cookie:
+        environment.linkedIn?.cookie ||
+        process.env.LINKEDIN_COOKIE ||
+        (isDev ? "dev-cookie" : undefined),
+      frontendUrl:
+        environment.linkedIn?.frontendUrl ||
+        process.env.FRONTEND_URL ||
+        "http://localhost:3000",
+      scopes: environment.linkedIn?.scopes || [
+        "r_liteprofile",
+        "r_emailaddress",
+      ],
     };
 
-    if (!isDev && (!config.clientId || !config.clientSecret || !config.redirectUri || !config.cookie)) {
-      throw new Error('Configurações essenciais do LinkedIn ausentes em produção');
+    if (
+      !isDev &&
+      (!config.clientId ||
+        !config.clientSecret ||
+        !config.redirectUri ||
+        !config.cookie)
+    ) {
+      throw new Error(
+        "Configurações essenciais do LinkedIn ausentes em produção",
+      );
     }
 
     this.config = config as LinkedInConfig;
@@ -266,6 +292,13 @@ export class LinkedInAuthService {
 
   public async storeState(state: string): Promise<void> {
     const redis = await this.getRedis();
-    await redis.set(`linkedin:state:${state}`, JSON.stringify({ /* dados adicionais se necessário */ }), 'EX', 300); // Armazena por 5 minutos
+    await redis.set(
+      `linkedin:state:${state}`,
+      JSON.stringify({
+        /* dados adicionais se necessário */
+      }),
+      "EX",
+      300,
+    ); // Armazena por 5 minutos
   }
 }
