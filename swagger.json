@@ -1,0 +1,275 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "LinkedIn API",
+    "version": "1.0.0",
+    "description": "API para integração com LinkedIn"
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/api/linkedin/auth": {
+      "get": {
+        "operationId": "authenticate",
+        "tags": [
+          "auth"
+        ],
+        "description": "Inicia o processo de autenticação com LinkedIn",
+        "responses": {
+          "200": {
+            "description": "URL de autenticação do LinkedIn",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao iniciar autenticação"
+          }
+        }
+      }
+    },
+    "/api/linkedin/callback": {
+      "get": {
+        "operationId": "handleCallback",
+        "tags": [
+          "auth"
+        ],
+        "description": "Callback após autenticação do LinkedIn",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "description": "Código de autorização retornado pelo LinkedIn",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Processa o callback",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/linkedin/profile": {
+      "post": {
+        "operationId": "getProfile",
+        "tags": [
+          "profile"
+        ],
+        "description": "Obtém o perfil do usuário",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "body",
+            "required": true,
+            "description": "Nome de usuário do LinkedIn",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "linkedinToken",
+            "in": "body",
+            "required": true,
+            "description": "Token de autenticação do LinkedIn",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perfil do usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "profile": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "email": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "avatarUrl": {
+                          "type": "string",
+                          "format": "uri"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "email",
+                        "avatarUrl"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "profile"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Username e token do LinkedIn são obrigatórios ou token inválido"
+          },
+          "401": {
+            "description": "Token inválido ou não fornecido"
+          }
+        }
+      }
+    },
+    "/api/linkedin/validate": {
+      "post": {
+        "operationId": "validateToken",
+        "tags": [
+          "auth"
+        ],
+        "description": "Valida o token do LinkedIn",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "body",
+            "required": true,
+            "description": "Token a ser validado",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado da validação do token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "isValid": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "isValid"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Token não fornecido"
+          },
+          "500": {
+            "description": "Erro ao validar token"
+          }
+        }
+      }
+    },
+    "/api/linkedin/browser-auth": {
+      "post": {
+        "operationId": "browserAuth",
+        "tags": [
+          "auth"
+        ],
+        "description": "Autentica o usuário via navegador",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "body",
+            "required": true,
+            "description": "Token do navegador",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado da autenticação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Token não fornecido"
+          },
+          "401": {
+            "description": "Token inválido ou expirado"
+          },
+          "500": {
+            "description": "Erro na autenticação"
+          }
+        }
+      }
+    }
+  }
+}
