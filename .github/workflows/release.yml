@@ -70,7 +70,7 @@ jobs:
 
       - name: Create Release
         run: |
-          changelog=$(git log ${{ env.LATEST_TAG }}..HEAD --pretty=format:"- %s%n" || echo "No changes since last release.")
+          changelog=$(git log v1.0.1..v1.0.2 --pretty=format:"- %s%n" || echo "No changes since last release.")
 
           gh release create ${{ env.NEW_VERSION }} \
             --title "${{ env.NEW_VERSION }}" \
