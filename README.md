@@ -9,7 +9,7 @@ Um sistema avançado de autenticação e scraping do LinkedIn, construído com N
 [![Redis](https://img.shields.io/badge/Redis-6.0-red.svg)](https://redis.io/)
 [![Axios](https://img.shields.io/badge/Axios-Latest-purple.svg)](https://axios-http.com/)
 [![LinkedIn API](https://img.shields.io/badge/LinkedIn_API-Latest-0077B5.svg)](https://developer.linkedin.com/)
-[![CI](https://github.com/rafaumeu/linkedin-fetcher/actions/workflows/ci.yml/badge.svg)](https://github.com/rafaumeu/linkedin-fetcher/actions/workflows/ci.yml)
+[![CI](https://github.com/rafaumeu/linkedin-fetcher1/actions/workflows/ci.yml/badge.svg)](https://github.com/rafaumeu/linkedin-fetcher1/actions/workflows/ci.yml)
 
 ---
 
@@ -102,8 +102,8 @@ Nossa pipeline CI executa automaticamente em cada push e pull request:
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/yourusername/linkedin-fetcher.git
-cd linkedin-fetcher
+git clone https://github.com/yourusername/linkedin-fetcher1.git
+cd linkedin-fetcher1
 ```
 
 2. Instale as dependências:
@@ -146,7 +146,7 @@ CORS_ORIGIN="*"
 ## 🏗️ Estrutura do Projeto
 
 ```bash
-linkedin-fetcher/
+linkedin-fetcher1/
 ├── src/
 │   ├── services/
 │   │   ├── LinkedInAuthService.ts
