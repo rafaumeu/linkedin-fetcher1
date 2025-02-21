@@ -1,6 +1,6 @@
-import { env } from './env';
+import { environment } from "./config/environment";
 
 export const config = {
-    linkedIn: env.linkedIn,
-    cors: env.cors
-}; 
+  linkedIn: environment.linkedIn,
+  cors: environment.cors,
+};
