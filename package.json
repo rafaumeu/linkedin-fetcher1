@@ -65,6 +65,9 @@
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/openapi-types"
+    ],
+    "types": [
+      "vitest/globals"
     ]
   }
 }
