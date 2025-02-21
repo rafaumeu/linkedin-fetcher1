@@ -1,4 +1,3 @@
-import crypto from "node:crypto";
 import axios, { AxiosError } from "axios";
 import type { Redis } from "ioredis";
 import { z } from "zod";
@@ -27,50 +26,22 @@ export class LinkedInAuthService {
   private readonly cache: CacheService;
 
   constructor() {
-    // Em desenvolvimento, não exigimos todas as configurações
-    const isDev = process.env.NODE_ENV === "development";
+    const isDev = process.env.NODE_ENV === 'development';
 
     const config = {
-      clientId:
-        environment.linkedIn?.clientId ||
-        process.env.LINKEDIN_CLIENT_ID ||
-        (isDev ? "dev-id" : undefined),
-      clientSecret:
-        environment.linkedIn?.clientSecret ||
-        process.env.LINKEDIN_CLIENT_SECRET ||
-        (isDev ? "dev-secret" : undefined),
-      redirectUri:
-        environment.linkedIn?.redirectUri ||
-        process.env.LINKEDIN_REDIRECT_URI ||
-        (isDev ? "http://localhost:3000/callback" : undefined),
-      cookie:
-        environment.linkedIn?.cookie ||
-        process.env.LINKEDIN_COOKIE ||
-        (isDev ? "dev-cookie" : undefined),
-      frontendUrl:
-        environment.linkedIn?.frontendUrl ||
-        process.env.FRONTEND_URL ||
-        "http://localhost:3000",
-      scopes: environment.linkedIn?.scopes || [
-        "r_liteprofile",
-        "r_emailaddress",
-      ],
+      clientId: environment.linkedIn?.clientId || process.env.LINKEDIN_CLIENT_ID || (isDev ? 'dev-id' : undefined),
+      clientSecret: environment.linkedIn?.clientSecret || process.env.LINKEDIN_CLIENT_SECRET || (isDev ? 'dev-secret' : undefined),
+      redirectUri: environment.linkedIn?.redirectUri || process.env.LINKEDIN_REDIRECT_URI || (isDev ? 'http://localhost:3000/callback' : undefined),
+      cookie: environment.linkedIn?.cookie || process.env.LINKEDIN_COOKIE || (isDev ? 'dev-cookie' : undefined),
+      frontendUrl: environment.linkedIn?.frontendUrl || process.env.FRONTEND_URL || 'http://localhost:3000',
+      scopes: environment.linkedIn?.scopes || ['r_liteprofile', 'r_emailaddress'],
     };
 
-    // Em produção, validamos todas as configurações
-    if (
-      !isDev &&
-      (!config.clientId ||
-        !config.clientSecret ||
-        !config.redirectUri ||
-        !config.cookie)
-    ) {
-      throw new Error(
-        "Configurações essenciais do LinkedIn ausentes em produção",
-      );
+    if (!isDev && (!config.clientId || !config.clientSecret || !config.redirectUri || !config.cookie)) {
+      throw new Error('Configurações essenciais do LinkedIn ausentes em produção');
     }
 
-    this.config = config as LinkedInConfig; // Type assertion segura aqui pois já validamos ou estamos em dev
+    this.config = config as LinkedInConfig;
     this.cache = new CacheService();
   }
 
@@ -233,35 +204,17 @@ export class LinkedInAuthService {
     }
   }
 
-  public async getAuthorizationUrl(): Promise<string> {
-    const state = crypto.randomBytes(16).toString("hex");
-    const codeVerifier = crypto.randomBytes(32).toString("hex");
-
-    await this.cache.set(
-      `linkedin:state:${state}`,
-      JSON.stringify(codeVerifier),
-      600,
-    ); // 10 minutos
-
-    const codeChallenge = crypto
-      .createHash("sha256")
-      .update(codeVerifier)
-      .digest("base64")
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=/g, "");
-
+  public async getAuthorizationUrl(state: string): Promise<string> {
+    const baseUrl = "https://www.linkedin.com/oauth/v2/authorization";
     const params = new URLSearchParams({
       response_type: "code",
       client_id: this.config.clientId,
       redirect_uri: this.config.redirectUri,
-      state,
+      state: state,
       scope: this.config.scopes.join(" "),
-      code_challenge: codeChallenge,
-      code_challenge_method: "S256",
     });
 
-    return `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`;
+    return `${baseUrl}?${params.toString()}`;
   }
 
   public async handleCallback(code: string): Promise<LinkedInToken> {
@@ -309,5 +262,10 @@ export class LinkedInAuthService {
       );
     }
     return state;
+  }
+
+  public async storeState(state: string): Promise<void> {
+    const redis = await this.getRedis();
+    await redis.set(`linkedin:state:${state}`, JSON.stringify({ /* dados adicionais se necessário */ }), 'EX', 300); // Armazena por 5 minutos
   }
 }
