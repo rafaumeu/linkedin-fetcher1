@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16, 18, 20, 21]
     
     services:
       redis:
@@ -22,7 +25,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "21.1.0"
+          node-version: ${{ matrix.node-version }}
           cache: "yarn"
 
       - name: Install dependencies
@@ -34,9 +37,15 @@ jobs:
       - name: Type check
         run: yarn tsc --noEmit
         
-      - name: Run tests
-        run: yarn test
+      - name: Run tests with coverage
+        run: npx vitest run --coverage
         env:
           LINKEDIN_CLIENT_ID: ${{ secrets.LINKEDIN_CLIENT_ID }}
           LINKEDIN_CLIENT_SECRET: ${{ secrets.LINKEDIN_CLIENT_SECRET }}
           LINKEDIN_REDIRECT_URI: http://localhost:3000/api/linkedin/callback
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: rafaumeu/linkedin-fetcher
