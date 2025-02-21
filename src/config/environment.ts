@@ -14,6 +14,8 @@ function loadEnvFile() {
   }
 }
 
+loadEnvFile();
+
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production"]).default("development"),
   PORT: z.coerce.number().default(3000),
@@ -30,8 +32,6 @@ const envSchema = z.object({
   FRONTEND_URL: z.string().default("http://localhost:3000"),
   CORS_ORIGIN: z.string().default("*"),
 });
-
-loadEnvFile();
 
 const parsedEnv = envSchema.safeParse(process.env);
 
