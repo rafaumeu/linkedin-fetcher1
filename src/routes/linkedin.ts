@@ -1,10 +1,10 @@
 import { Router } from "express";
+import passport from "passport";
 import { z } from "zod";
 import { LinkedInController } from "../controllers/LinkedInController";
 import { validateLinkedInToken } from "../middlewares/auth";
 import { validateSchema } from "../middlewares/validateSchema";
 import { LinkedInAuthService } from "../services/LinkedInAuthService";
-import passport from 'passport';
 
 const router = Router();
 const authService = new LinkedInAuthService();
@@ -12,16 +12,13 @@ const linkedinController = new LinkedInController(authService);
 
 // Rotas de autenticação
 router.get("/auth", linkedinController.authenticate);
-router.get("/callback", linkedinController.handleCallback);
-
-router.get('/auth/linkedin', passport.authenticate('linkedin'));
-
-router.get('/auth/linkedin/callback', 
-  passport.authenticate('linkedin', { failureRedirect: '/login' }),
+router.get("/auth/linkedin", passport.authenticate("linkedin"));
+router.get(
+  "/auth/linkedin/callback",
+  passport.authenticate("linkedin", { failureRedirect: "/login" }),
   (_req, res) => {
-    // Sucesso na autenticação
-    res.redirect('/'); // Redirecione para onde você quiser
-  }
+    res.redirect("/"); // Redirecione para onde você quiser
+  },
 );
 
 // Rotas protegidas
