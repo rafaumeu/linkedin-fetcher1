@@ -1,10 +1,10 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import passport from "passport";
 import { CacheService } from "./services/CacheService";
 import { setupSwagger } from "./swagger";
-import passport from 'passport';
-import './config/passport'; // Certifique-se de importar a configuração do Passport
+import "./config/passport"; // Certifique-se de importar a configuração do Passport
 
 dotenv.config(); // Carregando as variáveis de ambiente
 
@@ -56,7 +56,7 @@ const startServer = async (): Promise<void> => {
 startServer();
 
 app.use((_req, res) => {
-  res.status(404).send('Rota não encontrada.'); // Mensagem para rotas não definidas
+  res.status(404).send("Rota não encontrada."); // Mensagem para rotas não definidas
 });
 
 export default app;
